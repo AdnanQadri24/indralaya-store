@@ -1,67 +1,69 @@
-// Toggle class active untuk hamburger menu
-const navbarNav = document.querySelector('.navbar-nav');
-
-// ketika hamburger menu di klik
-document.querySelector('#hamburger-menu').onclick = () => {
-  navbarNav.classList.toggle('active');
-};
-
-// Toggle class active untuk search form
-const searchForm = document.querySelector('.search-form');
-const searchBox = document.querySelector('#search-box');
-
-document.querySelector('#search-button').onclick = (e) => {
-  searchForm.classList.toggle('active');
-  searchBox.focus();
-  e.preventDefault();
-};
-
-// Toggle class active untuk shopping cart
-const shoppingCart = document.querySelector('.shopping-cart');
-document.querySelector('#shopping-cart-button').onclick = (e) => {
-  shoppingCart.classList.toggle('active');
-  e.preventDefault();
-};
-
-// Klik di luar elemen
-const hm = document.querySelector('#hamburger-menu');
-const sb = document.querySelector('#search-button');
-const sc = document.querySelector('#shopping-cart-button');
-
-document.addEventListener('click', function (e) {
-  if (!hm.contains(e.target) && !navbarNav.contains(e.target)) {
-    navbarNav.classList.remove('active');
+class UIController {
+  constructor() {
+    this.navbarNav = document.querySelector('.navbar-nav');
+    this.searchForm = document.querySelector('.search-form');
+    this.searchBox = document.querySelector('#search-box');
+    this.shoppingCart = document.querySelector('.shopping-cart');
+    this.itemDetailModal = document.querySelector('#item-detail-modal');
+    this.itemDetailButtons = document.querySelectorAll('.item-detail-button');
+    this.initEventListeners();
   }
 
-  if (!sb.contains(e.target) && !searchForm.contains(e.target)) {
-    searchForm.classList.remove('active');
+  initEventListeners() {
+    document.querySelector('#hamburger-menu').onclick = () => this.toggleNavbar();
+    document.querySelector('#search-button').onclick = (e) => this.toggleSearchForm(e);
+    document.querySelector('#shopping-cart-button').onclick = (e) => this.toggleShoppingCart(e);
+    document.addEventListener('click', (e) => this.handleClickOutside(e));
+    this.itemDetailButtons.forEach((btn) => {
+      btn.onclick = (e) => this.showItemDetailModal(e);
+    });
+    document.querySelector('.modal .close-icon').onclick = (e) => this.hideItemDetailModal(e);
+    window.onclick = (e) => this.windowOnClick(e);
   }
 
-  if (!sc.contains(e.target) && !shoppingCart.contains(e.target)) {
-    shoppingCart.classList.remove('active');
+  toggleNavbar() {
+    this.navbarNav.classList.toggle('active');
   }
-});
 
-// Modal Box
-const itemDetailModal = document.querySelector('#item-detail-modal');
-const itemDetailButtons = document.querySelectorAll('.item-detail-button');
-
-itemDetailButtons.forEach((btn) => {
-  btn.onclick = (e) => {
-    itemDetailModal.style.display = 'flex';
+  toggleSearchForm(e) {
+    this.searchForm.classList.toggle('active');
+    this.searchBox.focus();
     e.preventDefault();
-  };
-});
-
-// klik tombol close modal
-document.querySelector('.modal .close-icon').onclick = (e) => {
-  itemDetailModal.style.display = 'none';
-  e.preventDefault();
-};
-
-// klik di luar modal
-window.onclick = (e) => {
-  if (e.target === itemDetailModal) {
-    itemDetailModal.style.display = 'none';
   }
-};
+
+  toggleShoppingCart(e) {
+    this.shoppingCart.classList.toggle('active');
+    e.preventDefault();
+  }
+
+  handleClickOutside(e) {
+    if (!document.querySelector('#hamburger-menu').contains(e.target) && !this.navbarNav.contains(e.target)) {
+      this.navbarNav.classList.remove('active');
+    }
+    if (!document.querySelector('#search-button').contains(e.target) && !this.searchForm.contains(e.target)) {
+      this.searchForm.classList.remove('active');
+    }
+    if (!document.querySelector('#shopping-cart-button').contains(e.target) && !this.shoppingCart.contains(e.target)) {
+      this.shoppingCart.classList.remove('active');
+    }
+  }
+
+  showItemDetailModal(e) {
+    this.itemDetailModal.style.display = 'flex';
+    e.preventDefault();
+  }
+
+  hideItemDetailModal(e) {
+    this.itemDetailModal.style.display = 'none';
+    e.preventDefault();
+  }
+
+  windowOnClick(e) {
+    if (e.target === this.itemDetailModal) {
+      this.itemDetailModal.style.display = 'none';
+    }
+  }
+}
+
+// Membuat instance dari UIController
+const uiController = new UIController();
